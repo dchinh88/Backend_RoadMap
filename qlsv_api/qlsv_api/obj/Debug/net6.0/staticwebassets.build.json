@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "3PqWFSZIQHkcV2LJOQBTmHlqBhyvG+jj4QE4Y0BSSGI=",
+  "Source": "qlsv_api",
+  "BasePath": "_content/qlsv_api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
