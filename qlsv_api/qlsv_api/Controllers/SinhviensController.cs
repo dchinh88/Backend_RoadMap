@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using qlsv_api.DTO;
 using qlsv_api.Models;
 
 namespace qlsv_api.Controllers
@@ -20,93 +21,112 @@ namespace qlsv_api.Controllers
             _context = context;
         }
 
-        // GET: api/Sinhviens
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sinhvien>>> GetSinhviens()
+        //GETALL
+        [HttpGet("/getall")]
+        public async Task<ActionResult<IEnumerable<SinhvienDTO>>> GetAll()
         {
-          if (_context.Sinhviens == null)
-          {
-              return NotFound();
-          }
-            return await _context.Sinhviens.ToListAsync();
-        }
-
-        // GET: api/Sinhviens/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Sinhvien>> GetSinhvien(int id)
-        {
-          if (_context.Sinhviens == null)
-          {
-              return NotFound();
-          }
-            var sinhvien = await _context.Sinhviens.FindAsync(id);
-
-            if (sinhvien == null)
+            if (_context.Sinhviens == null)
             {
                 return NotFound();
             }
 
-            return sinhvien;
+            return await _context.Sinhviens.Select(s => SvDTO(s)).ToListAsync();
         }
 
-        // PUT: api/Sinhviens/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSinhvien(int id, Sinhvien sinhvien)
+        // GET: api/Sinhviens
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<SinhvienDTO>>> GetSinhviens(int pageNumber)
         {
-            if (id != sinhvien.Masv)
+            int pageSize = 5;
+            if (_context.Sinhviens == null)
             {
-                return BadRequest();
+                return NotFound();
+            }
+            var sinhviens = await _context.Sinhviens.Select(s => SvDTO(s)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            /*return await _context.Sinhviens.Select(s => SvDTO(s)).ToListAsync();*/
+            return sinhviens;
+        }
+
+        // GET: api/Sinhviens/5
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<SinhvienDTO>> GetSinhvien(int id)
+        {
+            var Sinhvien = await _context.Sinhviens.FindAsync(id);
+
+            if (Sinhvien == null)
+            {
+                return NotFound();
             }
 
-            _context.Entry(sinhvien).State = EntityState.Modified;
+            return SvDTO(Sinhvien);
+        }
 
+        [HttpGet("{name}")]
+        public async Task<ActionResult<SinhvienDTO>> GetSinhvienByName(string name)
+        {
+            var Sinhvien = await _context.Sinhviens.FirstOrDefaultAsync(n => n.Tensv == name);
+
+            if (Sinhvien == null)
+            {
+                return NotFound();
+            }
+
+            return SvDTO(Sinhvien);
+        }
+
+
+        // PUT: api/Sinhviens/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutSinhvien(int id, SinhvienDTO sinhvienDTO)
+        {
+            var sinhvien = await _context.Sinhviens.FindAsync(id);
+            if (sinhvien == null)
+            {
+                return NotFound();
+            }
+            sinhvien.Tensv = sinhvienDTO.Tensv;
+            sinhvien.Ngaysinh = sinhvienDTO.Ngaysinh;
+            sinhvien.Gioitinh = sinhvienDTO.Gioitinh;
+            sinhvien.Makhoa = sinhvienDTO.Makhoa;
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!SinhvienExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                Console.WriteLine(e.Message);
             }
-
-            return NoContent();
+            /*return NoContent();*/
+            return Ok();
         }
 
         // POST: api/Sinhviens
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Sinhvien>> PostSinhvien(Sinhvien sinhvien)
+        public async Task<ActionResult<SinhvienDTO>> PostSinhvien(SinhvienDTO sinhvienDTO)
         {
-          if (_context.Sinhviens == null)
-          {
-              return Problem("Entity set 'QlsvApiContext.Sinhviens'  is null.");
-          }
-            _context.Sinhviens.Add(sinhvien);
+            var sinhvien = new Sinhvien
+            {
+                Masv = sinhvienDTO.Masv,
+                Tensv = sinhvienDTO.Tensv,
+                Ngaysinh = sinhvienDTO.Ngaysinh,
+                Gioitinh = sinhvienDTO.Gioitinh,
+                Makhoa = sinhvienDTO.Makhoa,
+            };
             try
             {
+                _context.Sinhviens.Add(sinhvien);
                 await _context.SaveChangesAsync();
+                /*return CreatedAtAction(nameof(GetSinhvien), new { id = sinhvien.Masv }, sinhvien);*/
+                
             }
-            catch (DbUpdateException)
+            catch (Exception)
             {
-                if (SinhvienExists(sinhvien.Masv))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+
+                return BadRequest();
             }
 
-            return CreatedAtAction("GetSinhvien", new { id = sinhvien.Masv }, sinhvien);
+
+            return Ok();
         }
 
         // DELETE: api/Sinhviens/5
@@ -126,7 +146,8 @@ namespace qlsv_api.Controllers
             _context.Sinhviens.Remove(sinhvien);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            /*return NoContent();*/
+            return Ok();
         }
 
 
@@ -134,5 +155,14 @@ namespace qlsv_api.Controllers
         {
             return (_context.Sinhviens?.Any(e => e.Masv == id)).GetValueOrDefault();
         }
+
+        private static SinhvienDTO SvDTO(Sinhvien sinhvien) => new SinhvienDTO
+        {
+            Masv = sinhvien.Masv,
+            Tensv = sinhvien.Tensv,
+            Ngaysinh = sinhvien.Ngaysinh,
+            Gioitinh = sinhvien.Gioitinh,
+            Makhoa = sinhvien.Makhoa
+        };
     }
 }

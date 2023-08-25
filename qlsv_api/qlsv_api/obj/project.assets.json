@@ -11480,19 +11480,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ADMIN\\.nuget\\packages\\": {}
+    "C:\\Users\\DucChinh\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\G-Connect\\Back-End_Roadmap\\QLSV_API\\qlsv_api\\qlsv_api\\qlsv_api.csproj",
+      "projectUniqueName": "D:\\G-Connect\\Back-End_Roadmap\\QLSV_API\\qlsv_api\\qlsv_api\\qlsv_api.csproj",
       "projectName": "qlsv_api",
-      "projectPath": "C:\\G-Connect\\Back-End_Roadmap\\QLSV_API\\qlsv_api\\qlsv_api\\qlsv_api.csproj",
-      "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-      "outputPath": "C:\\G-Connect\\Back-End_Roadmap\\QLSV_API\\qlsv_api\\qlsv_api\\obj\\",
+      "projectPath": "D:\\G-Connect\\Back-End_Roadmap\\QLSV_API\\qlsv_api\\qlsv_api\\qlsv_api.csproj",
+      "packagesPath": "C:\\Users\\DucChinh\\.nuget\\packages\\",
+      "outputPath": "D:\\G-Connect\\Back-End_Roadmap\\QLSV_API\\qlsv_api\\qlsv_api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\DucChinh\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -11500,6 +11500,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -11560,7 +11561,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
       }
     }
   }

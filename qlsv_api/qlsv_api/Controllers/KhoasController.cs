@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using qlsv_api.DTO;
 using qlsv_api.Models;
 
 namespace qlsv_api.Controllers
@@ -22,91 +23,64 @@ namespace qlsv_api.Controllers
 
         // GET: api/Khoas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Khoa>>> GetKhoas()
+        public async Task<ActionResult<IEnumerable<KhoaDTO>>> GetKhoas()
         {
           if (_context.Khoas == null)
           {
               return NotFound();
           }
-            return await _context.Khoas.ToListAsync();
+            return await _context.Khoas.Select(k => khoaDTO(k)).ToListAsync();
         }
 
         // GET: api/Khoas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Khoa>> GetKhoa(int id)
+        public async Task<ActionResult<KhoaDTO>> GetKhoa(int id)
         {
-          if (_context.Khoas == null)
-          {
-              return NotFound();
-          }
             var khoa = await _context.Khoas.FindAsync(id);
-
-            if (khoa == null)
-            {
-                return NotFound();
-            }
-
-            return khoa;
+            if (khoa == null) return NotFound();
+            return khoaDTO(khoa);
         }
 
         // PUT: api/Khoas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutKhoa(int id, Khoa khoa)
+        public async Task<IActionResult> PutKhoa(int id, KhoaDTO khoaDTO)
         {
-            if (id != khoa.Makhoa)
+            var khoa = await _context.Khoas.FindAsync(id);
+            if (khoa == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(khoa).State = EntityState.Modified;
-
+            khoa.Tenkhoa = khoaDTO.Tenkhoa;
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!KhoaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                Console.WriteLine(e.Message);
+                return NotFound();
             }
-
             return NoContent();
         }
 
         // POST: api/Khoas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Khoa>> PostKhoa(Khoa khoa)
+        public async Task<ActionResult<KhoaDTO>> PostKhoa(KhoaDTO khoaDTO)
         {
-          if (_context.Khoas == null)
-          {
-              return Problem("Entity set 'QlsvApiContext.Khoas'  is null.");
-          }
+            if(_context.Khoas == null)
+            {
+                return Problem("zz");
+            }
+            var khoa = new Khoa
+            {
+                Makhoa = khoaDTO.Makhoa,
+                Tenkhoa = khoaDTO.Tenkhoa
+            };
             _context.Khoas.Add(khoa);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (KhoaExists(khoa.Makhoa))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetKhoa", new { id = khoa.Makhoa }, khoa);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetKhoa), new { id = khoa.Makhoa }, khoa);
         }
 
         // DELETE: api/Khoas/5
@@ -133,5 +107,10 @@ namespace qlsv_api.Controllers
         {
             return (_context.Khoas?.Any(e => e.Makhoa == id)).GetValueOrDefault();
         }
+        private static KhoaDTO khoaDTO(Khoa k) => new KhoaDTO
+        {
+            Makhoa = k.Makhoa,
+            Tenkhoa = k.Tenkhoa
+        };
     }
 }
